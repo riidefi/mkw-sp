@@ -23,8 +23,13 @@ typedef enum {
     kDevDolphinIoctl_GetRealProductCode = 6,  // Vector IN() OUT(char[])
 } DevDolphinIoctl;
 
+extern void* sDevDolphinPermitThread;
+
 IOSDolphin IOSDolphin_Open() {
-    return IOS_Open("/dev/dolphin", 0);
+    sDevDolphinPermitThread = OSGetCurrentThread();
+    s32 res = IOS_Open("/dev/dolphin", 0);
+    sDevDolphinPermitThread = NULL;
+    return res;
 }
 
 void IOSDolphin_Close(IOSDolphin dolphin) {

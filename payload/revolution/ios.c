@@ -1,13 +1,18 @@
 #include <Common.h>
 #include <revolution.h>
+#include <string.h>
 
 // ios.S
 extern s32 real_IOS_Open(const char *path, u32 flags);
 extern s32 real_IOS_OpenAsync(const char *path, u32 flags, void *cb, void *userdata);
 
+void* sDevDolphinPermitThread;
 static bool CanIOSOpen(const char *path, u32 flags) {
-    (void)path;
     (void)flags;
+
+    if (!strcmp(path, "/dev/dolphin")) {
+        return sDevDolphinPermitThread == OSGetCurrentThread();
+    }
 
     return true;
 }
@@ -30,7 +35,7 @@ s32 my_IOS_OpenAsync(const char *path, u32 flags, void *cb, void *userdata) {
     }
 
     const s32 result = real_IOS_OpenAsync(path, flags, cb, userdata);
-    SP_LOG("IOS_OpenAsync: %s (%x) cb=%p, user=%p -> result 0x%x", path, flags, cb, userdata,
-            result);
+    SP_LOG("IOS_OpenAsync: %s (%x) cb=%p, user=%p -> result 0x%x", path, flags, cb,
+            userdata, result);
     return result;
 }
