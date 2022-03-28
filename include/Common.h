@@ -10,7 +10,7 @@
 #endif
 
 #define SP_DEBUG_STACK_RANDOMIZE (1 << 0)
-#define SP_DEBUG_LEVEL (SP_DEBUG_STACK_RANDOMIZE)
+#define SP_DEBUG_LEVEL (0)
 
 enum {
     kPlatform32 = 0,
