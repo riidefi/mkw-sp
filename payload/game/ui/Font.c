@@ -1,5 +1,7 @@
 #include "Font.h"
 
+#include <nw4r/lyt/lyt_pane.h>
+
 enum {
     FORMAT_ID_IA4 = 0,
     FORMAT_ID_RGB5A3 = 1,
