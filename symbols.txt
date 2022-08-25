@@ -1,3 +1,12 @@
+
+0x80172F64 GXCallDisplayList
+0x8022F860 _ZN3EGG4MathIfE3sinEf
+0x8022F86C _ZN3EGG4MathIfE3cosEf
+0x809BD6E8 _ZN6System9CourseMap10spInstanceE
+0x809C1830 _ZN3Gfx8DrawList10spInstanceE
+0x8082A8F0 DrawHook
+0x8082A884 _ZN2SP9DrawDebugEv
+
 0x80005f34 memcpy
 0x80006038 memset
 0x800060A4 __start
