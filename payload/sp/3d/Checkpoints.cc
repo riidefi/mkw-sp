@@ -1,7 +1,11 @@
 #include "Checkpoints.hh"
 #include <Common.hh>
-
+#include <algorithm>
+#include <cstring>
+#include <game/kart/KartObjectProxy.hh>
 #include <game/system/CourseMap.hh>
+#include <game/system/RaceManager.hh>
+#include <iterator>
 extern "C" {
 #include <revolution.h>
 #include <revolution/gx.h>
@@ -234,8 +238,82 @@ public:
     }
 };
 
+struct Tracers {
+#pragma pack(push)
+#pragma pack(1)
+    struct Vert {
+        Vec3 pos;
+        u32 clr;
+    };
+    struct DL {
+        u8 pad0 = 0;
+        u8 cmd = (u8)GX_LINES | (u8)GX_VTXFMT0;
+        u16 count = 0;
+        Vert lines[2 * 11];
+        u8 pad1[32] = {};
+    };
+    alignas(32) DL m_DL;
+#pragma pack(pop)
+
+    void reset() {
+        m_DL.count = 0;
+    }
+    bool tryAddLine(Vert vert0, Vert vert1) {
+        if (static_cast<std::size_t>(m_DL.count) + 2 > std::size(m_DL.lines)) {
+            assert(!"Not enough room");
+            return false;
+        }
+        m_DL.lines[m_DL.count++] = vert0;
+        m_DL.lines[m_DL.count++] = vert1;
+        return true;
+    }
+    void draw() {
+        const u32 bufLen = 4 + m_DL.count * sizeof(Vert);
+        const u32 bufLenRounded = ROUND_UP(bufLen, 32);
+        assert(bufLenRounded <= sizeof(m_DL));
+        memset(reinterpret_cast<u8 *>(&m_DL) + bufLen, 0, bufLenRounded - bufLen);
+        assert(((u32)&m_DL) % 32 == 0);
+        assert(bufLenRounded % 32 == 0);
+        // DCFlushRange(&m_DL, bufLenRounded);
+        // GXCallDisplayList(&m_DL, bufLen);
+        for (f64* it = (f64*)&m_DL; it != (f64*)((u8*)(&m_DL) + bufLenRounded); ++it) {
+            WGPIPE._f64 = *it;
+        }
+    }
+};
+
+static Tracers sTracers;
+Vec3 sCurrent;
+
+void onPositionUpdate(Vec3 pos, u32 id) {
+    if (id == 0) {
+        sTracers.reset();
+        sCurrent = pos;
+        return;
+    }
+    static const u32 colors[2] = {
+            0x00FF3C77, // You
+            0xCCCC0077 // Ghost
+    };
+    sTracers.tryAddLine(Tracers::Vert{.pos = sCurrent, .clr = colors[0]},
+            Tracers::Vert{.pos = pos, .clr = colors[1]});
+}
+const Vec3 *PhysicsHook(Kart::KartObjectProxy *proxy) {
+    const Vec3 *position = proxy->getPos();
+    System::RaceManager *raceManager = System::RaceManager::Instance();
+    if (raceManager == nullptr)
+        return position;
+    const u32 id = proxy->getPlayerId();
+    // const u32 lap = raceManager->player(id)->lap();
+    onPositionUpdate(*position, id);
+    return position;
+}
+extern "C" int PhysicsHookAddr;
+PATCH_BL(PhysicsHookAddr, PhysicsHook);
+
 void DrawCheckpoints() {
     Checkpoints::onDraw();
+    sTracers.draw();
 }
 
 } // namespace SP

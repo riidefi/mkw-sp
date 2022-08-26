@@ -6,6 +6,7 @@
 0x809C1830 _ZN3Gfx8DrawList10spInstanceE
 0x8082A8F0 DrawHook
 0x8082A884 _ZN2SP9DrawDebugEv
+0x8058EFC4 PhysicsHookAddr
 
 0x80005f34 memcpy
 0x80006038 memset

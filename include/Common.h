@@ -236,8 +236,8 @@ typedef struct {
     extern const Patch patch_ ## to = { \
         .type = PATCH_TYPE_BRANCH, \
         .branch = { \
-            &from, \
-            &to, \
+            (void *)&from, \
+            (void *)&to, \
             link, \
             thunk, \
         }, \

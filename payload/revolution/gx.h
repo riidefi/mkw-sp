@@ -40,6 +40,7 @@ typedef union {
     u16 _u16;
     s32 _s32;
     u32 _u32;
+    f64 _f64;
     int i;
     void *p;
     float f;
