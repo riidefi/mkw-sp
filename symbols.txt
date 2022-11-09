@@ -1,3 +1,6 @@
+807C28D8 _ZN2SP19KCLManager_fromFileEPvS0_
+807C2884 _ZN2SP14KCLManager_dsiEPv
+
 0x80005F34 memcpy_slow
 0x80006038 memset_slow
 0x800060A4 __start
