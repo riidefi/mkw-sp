@@ -273,6 +273,7 @@
 0x80542D4C RootScene_allocate
 0x80543db0 SaveManager_createInstance
 0x80543f10 SaveManager_ct
+0x80544840 SaveManager_initOld
 0x80544a38 SaveManager_initAsync
 0x80544c2c SaveManager_saveLicensesAsync
 0x80544cd8 SaveManager_selectLicense
@@ -637,3 +638,10 @@
 0x809c2f38 s_driverManager
 0x809c38b8 s_raceGlobals
 0x809c4680 s_racePage
+
+0x800CD0A0 hate
+0x800D30E4 IP
+0x800EBFD4 DWC_CheckUserData
+0x800EBF6C DWCi_Acc_IsAuthentic
+0x806635C0 doCheckuserData
+0x800ED710 GetGsbrcd

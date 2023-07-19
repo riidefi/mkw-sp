@@ -1,0 +1,36 @@
+Language:        Cpp
+BasedOnStyle: Chromium
+
+# `{ 255 }` instead of `{255}`
+Cpp11BracedListStyle: False
+
+# `EGG_Heap *heap` instead of `EGG_Heap* heap`
+PointerAlignment: Right
+
+# Indent four spaces
+IndentWidth: 4
+
+#
+# void EGG_TaskThread_request(EGG_TaskThread *this, TFunction mainFunction, void *arg,
+#        void *taskEndMessage);
+#
+# rather than
+# 
+# void EGG_TaskThread_request(EGG_TaskThread *this,
+#                             TFunction mainFunction,
+#                             void *arg,
+#                             void *taskEndMessage);
+#
+AlignAfterOpenBracket: DontAlign
+ContinuationIndentWidth: 8
+
+# Enable this when clang-14
+# PenaltyBreakOpenParenthesis: 1000
+
+ColumnLimit: 90 # 84 chars in above example
+BinPackArguments: False
+BinPackArguments: True
+BinPackParameters: True
+AllowAllParametersOfDeclarationOnNextLine: True
+
+IndentCaseLabels: False

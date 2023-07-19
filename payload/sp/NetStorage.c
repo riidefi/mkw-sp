@@ -5,7 +5,22 @@
 #include <stdio.h>
 #include <wchar.h>
 
+#define STARTUP_NETSTORAGE_IP "192.168.10.89:1234"
+
 static NetStorageClient sNetStorageClient;
+
+
+
+void MyDwcPrintf(u32 category, const char* s, int index, int aid, int pid, const char* ip) {
+    SP_LOG("[%02d] aid = %d, pid = %u, qr2 pub adr=%s", index, aid, pid, ip);
+    char buf[128];
+    snprintf(buf, sizeof(buf), "\"profileV1\":{\"ip\":\"%s\"}", ip);
+    NetStorage_sendJSONCommands(&sNetStorageClient, buf);
+}
+
+extern int IP;
+PATCH_BL(IP, MyDwcPrintf);
+
 static bool sNetStorageConnected;
 
 static NetFile sNetFiles[12];
@@ -277,6 +292,10 @@ bool NetStorage_init(Storage *storage) {
     SP_LOG("..connected");
     SP_LOG("========================");
 #endif  // STARTUP_NETSTORAGE_IP
+
+char buf[128];
+snprintf(buf, sizeof(buf), "\"profileV1\":{\"ip\":\"%s\"}", "8.8.8.8");
+    NetStorage_sendJSONCommands(&sNetStorageClient, buf);
 
     storage->fastOpen = NetStorage_fastOpen;
     storage->open = NetStorage_open;

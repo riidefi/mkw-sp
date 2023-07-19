@@ -639,8 +639,6 @@ asset_in_files = {
     os.path.join('Scene', 'UI', 'TitleSP.szs'): [
         os.path.join('button', 'blyt', 'common_w076_license_icon_center.brlyt.json5'),
         os.path.join('button', 'ctrl', 'LicenseSelect.brctr.json5'),
-        os.path.join('button', 'ctrl', 'TopMenuMultiWaku.brctr.json5'),
-        os.path.join('button', 'ctrl', 'TopMenuSingleWaku.brctr.json5'),
         os.path.join('button', 'timg', 'tt_license_icon_004.tpl'),
     ],
 }

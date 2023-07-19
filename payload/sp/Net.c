@@ -44,6 +44,8 @@ static void *so_alloc(u32 id, s32 size) {
 
     OSUnlockMutex(&sSocketMutex);
 
+    SP_LOG("ALLOC ID %i, ALLOC SIZE %i", id, size);
+
     assert(!"Bad alloc");
     return NULL;
 }
@@ -113,7 +115,63 @@ static bool Net_initLow(NetSlabs *netSlabs) {
 }
 
 bool Net_init(void) {
-    NetSlabs* slabs = OSAllocFromMEM2ArenaLo(sizeof(NetSlabs), 4);
-    
+    NetSlabs *slabs = OSAllocFromMEM2ArenaLo(sizeof(NetSlabs), 4);
+
     return Net_initLow(slabs);
 }
+
+typedef struct {
+    char _[0x28];
+    char accountData[0x40];
+    // ...
+} Holder_UserData;
+
+static Holder_UserData **UserData = (Holder_UserData **)0x809C2110;
+
+extern bool DWC_CheckUserData(void *);
+extern bool DWCi_Acc_IsAuthentic(void *);
+
+u8 sAccData[] = {
+    //
+    0x00, 0x00, 0x00, 0x40,                                                  // size
+    0x00, 0x00, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x47, 0x1B, 0xE8, 0xDB,  // psuedo
+    0x00, 0x00, 0x09, 0x1C, 0x28, 0xC5, 0xC6, 0x65, 0x47, 0x1B, 0xE8, 0xDB,  // authentic
+    0x23, 0xDC, 0x5B, 0x5F,  // gs_profile_Id
+    0x00, 0x00, 0x00, 0x00,  // flag
+    'R', 'M', 'C', 'J',      // gamecode
+    0x00, 0x00, 0x00, 0x00,  // reserved[0]
+    0x00, 0x00, 0x00, 0x00,  // reserved[1]
+    0x00, 0x00, 0x00, 0x00,  // reserved[2]
+    0x00, 0x00, 0x00, 0x00,  // reserved[3]
+    0x00, 0x00, 0x00, 0x00,  // reserved[4]
+    0xF7, 0xD5, 0xE2, 0x1F,  // crc32
+};
+
+extern int doCheckuserData;
+
+bool MyCheckUserData(void* p) {
+    memcpy(p, sAccData, sizeof(sAccData));
+    return DWC_CheckUserData(p);
+}
+
+
+PATCH_BL(doCheckuserData, MyCheckUserData);
+
+int NetManager_connect;
+void NetManager_myConnect() {
+    Holder_UserData *pUserData = *UserData;
+
+    memcpy(&pUserData->accountData, sAccData, sizeof(pUserData->accountData));
+
+    SP_LOG("@@@@@@@@@@@@@@@@");
+
+    SP_LOG("DWCi_Acc_IsAuthentic");
+    assert(DWCi_Acc_IsAuthentic(pUserData->accountData));
+
+    SP_LOG("DWC_CheckUserData");
+    assert(DWC_CheckUserData(sAccData));
+
+    SP_LOG("Done4");
+}
+PATCH_BL(NetManager_connect + 0x38, NetManager_myConnect);
+
